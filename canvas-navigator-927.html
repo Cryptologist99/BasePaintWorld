@@ -879,6 +879,9 @@
                             const region = floodFillRegion(x, y, mapData, displayData, processed, mapCanvas.width, mapCanvas.height, isSorted);
 
                             if (region.pixels.length > 0) {
+                                if (isSorted) {
+                                    extendSortYThroughBase(region, mapData, mapCanvas.width, mapCanvas.height);
+                                }
                                 overlayRegions.push(region);
                                 if (isYellow) yellowPixelCount += region.pixels.length;
                                 if (isOrange) orangePixelCount += region.pixels.length;
@@ -895,6 +898,44 @@
             }
         }
         
+        // A Y-sorted region only covers the walk-behind art (e.g. a tree canopy). The
+        // solid base under it (trunk) is painted magenta/orange, so it is NOT part of
+        // the region and the region's maxY lands at the canopy bottom. The player's feet
+        // can pass that row while their body still overlaps the canopy, which makes them
+        // pop in front. Walk down from each column's lowest region pixel through the
+        // connected solid base so sortY describes the object's real footing.
+        function extendSortYThroughBase(region, mapData, width, height) {
+            const bottomByColumn = new Map();
+            for (const p of region.pixels) {
+                const current = bottomByColumn.get(p.x);
+                if (current === undefined || p.y > current) {
+                    bottomByColumn.set(p.x, p.y);
+                }
+            }
+
+            let sortY = region.maxY;
+
+            for (const [x, bottomY] of bottomByColumn) {
+                let y = bottomY + 1;
+                while (y < height) {
+                    const idx = (y * width + x) * 4;
+                    const r = mapData.data[idx];
+                    const g = mapData.data[idx + 1];
+                    const b = mapData.data[idx + 2];
+
+                    const isMagenta = (r >= 250 && g <= 5 && b >= 250);
+                    const isOrange = (r >= 250 && g >= 130 && g <= 140 && b <= 5);
+                    if (!isMagenta && !isOrange) break;
+
+                    y++;
+                }
+                sortY = Math.max(sortY, y - 1);
+            }
+
+            // Only sortY moves - minY/maxY still bound the drawn canvas
+            region.sortY = sortY;
+        }
+
         // Flood fill to find a connected region of same-class overlay pixels
         // (yellow/orange = always-above; green = true Y-sorted). isSortedClass
         // decides which class this region belongs to, so a green region never
@@ -1292,14 +1333,23 @@
         }
 
         function isCollision(x, y) {
-            // x, y represent bottom-left of sprite
-            // Calculate bottom-center collision box position
-            const collisionX = Math.floor(x + (player.width - player.collisionWidth) / 2);
-            const collisionY = Math.floor(y - player.collisionHeight);  // Bottom row
-            
-            // Check the 2x1 collision box at bottom-center of sprite
-            for (let px = collisionX; px < collisionX + player.collisionWidth; px++) {
-                for (let py = collisionY; py < collisionY + player.collisionHeight; py++) {
+            // x, y represent bottom-left of sprite, and are fractional (speed is sub-pixel)
+            // Calculate bottom-center collision box as a float rect
+            const boxLeft = x + (player.width - player.collisionWidth) / 2;
+            const boxTop = y - player.collisionHeight;  // Bottom row
+            const boxRight = boxLeft + player.collisionWidth;
+            const boxBottom = boxTop + player.collisionHeight;
+
+            // Test every pixel the box TOUCHES, not just the one its floored corner
+            // lands in. Flooring alone lets the box sit half-way onto a solid pixel,
+            // which reads as standing on a wall and breaks Y-sorting against it.
+            const minPx = Math.floor(boxLeft);
+            const maxPx = Math.ceil(boxRight) - 1;
+            const minPy = Math.floor(boxTop);
+            const maxPy = Math.ceil(boxBottom) - 1;
+
+            for (let px = minPx; px <= maxPx; px++) {
+                for (let py = minPy; py <= maxPy; py++) {
                     const color = getPixelColor(px, py);
                     // Check both magenta (collision only) and orange (collision + overlay)
                     if (isMarkerColor(color, COLLISION_COLOR) || isMarkerColor(color, SOLID_OVERLAY_COLOR)) {
