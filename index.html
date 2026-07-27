@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BasePaint World - Start</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #startscreen {
+            max-width: 100vw;
+            max-height: 100vh;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        .clickable-area {
+            position: absolute;
+            width: 50%;
+            height: 8%;
+            cursor: pointer;
+            /* Uncomment to see clickable areas for debugging */
+            /* background: rgba(255, 0, 0, 0.3); */
+        }
+
+        .mint-area {
+            top: 52%;
+            left: 25%;
+        }
+
+        .canvas-area {
+            top: 62%;
+            left: 25%;
+        }
+
+        .instruction {
+            position: absolute;
+            bottom: 5%;
+            width: 100%;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img id="startscreen" src="assets/startscreen-canvas.png" alt="BasePaint Start Screen">
+
+        <!-- Clickable areas -->
+        <div class="clickable-area mint-area" data-option="mint"></div>
+        <div class="clickable-area canvas-area" data-option="canvas"></div>
+
+        <div class="instruction">Use ↑↓ Arrow Keys or Click • Press ENTER or SPACE to select</div>
+    </div>
+
+    <script>
+        let selectedOption = 1; // 0 = mint, 1 = canvas (default to canvas)
+        const options = ['mint', 'canvas'];
+        const urls = {
+            mint: 'https://basepaint.xyz/',
+            canvas: 'canvas-navigator.html'
+        };
+
+        const images = {
+            mint: 'assets/startscreen-mint.png',
+            canvas: 'assets/startscreen-canvas.png'
+        };
+
+        const screenImage = document.getElementById('startscreen');
+
+        function updateImage() {
+            screenImage.src = images[options[selectedOption]];
+        }
+
+        function selectOption() {
+            const url = urls[options[selectedOption]];
+            window.location.href = url;
+        }
+
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
+                e.preventDefault();
+                selectedOption = 0;
+                updateImage();
+            } else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
+                e.preventDefault();
+                selectedOption = 1;
+                updateImage();
+            } else if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                selectOption();
+            }
+        });
+
+        // Click controls
+        document.querySelectorAll('.clickable-area').forEach(area => {
+            area.addEventListener('click', () => {
+                const option = area.dataset.option;
+                selectedOption = options.indexOf(option);
+                updateImage();
+                // Small delay so user can see selection before navigating
+                setTimeout(selectOption, 150);
+            });
+
+            // Hover effect
+            area.addEventListener('mouseenter', () => {
+                const option = area.dataset.option;
+                selectedOption = options.indexOf(option);
+                updateImage();
+            });
+        });
+
+        // Preload both images
+        const preload1 = new Image();
+        const preload2 = new Image();
+        preload1.src = images.mint;
+        preload2.src = images.canvas;
+
+        // Initialize
+        updateImage();
+    </script>
+</body>
+</html>

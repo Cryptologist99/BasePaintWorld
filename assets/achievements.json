@@ -1,0 +1,105 @@
+[
+  {
+    "id": "edge_north",
+    "name": "Northern Explorer",
+    "description": "Reached the northern edge of the canvas",
+    "icon": "🧭"
+  },
+  {
+    "id": "edge_south",
+    "name": "Southern Wanderer",
+    "description": "Reached the southern edge of the canvas",
+    "icon": "🗺️"
+  },
+  {
+    "id": "edge_east",
+    "name": "Eastern Adventurer",
+    "description": "Reached the eastern edge of the canvas",
+    "icon": "🌅"
+  },
+  {
+    "id": "edge_west",
+    "name": "Western Pioneer",
+    "description": "Reached the western edge of the canvas",
+    "icon": "🌄"
+  },
+  {
+    "id": "visit_939",
+    "name": "Tiny Village",
+    "description": "Visited Canvas 939: Tiny Village",
+    "icon": "🖼️"
+  },
+  {
+    "id": "visit_927",
+    "name": "Hospital",
+    "description": "Visited Canvas 927: Hospital",
+    "icon": "🖼️"
+  },
+  {
+    "id": "visit_201",
+    "name": "Stained Glass Window",
+    "description": "Visited Canvas 201: Stained Glass Window",
+    "icon": "🖼️"
+  },
+  {
+    "id": "visit_375",
+    "name": "Bakery",
+    "description": "Visited Canvas 375: Bakery",
+    "icon": "🖼️"
+  },
+  {
+    "id": "visit_237",
+    "name": "Beer!",
+    "description": "Visited Canvas 237: Beer!",
+    "icon": "🖼️"
+  },
+  {
+    "id": "visit_561",
+    "name": "Love Your Pet Day",
+    "description": "Visited Canvas 561: Love Your Pet Day",
+    "icon": "🖼️"
+  },
+  {
+    "id": "visit_700",
+    "name": "BasePaint Artist Studio",
+    "description": "Visited Canvas 700: BasePaint Artist Studio",
+    "icon": "🖼️"
+  },
+  {
+    "id": "visit_576",
+    "name": "The Cat Got Into the Paint!",
+    "description": "Visited Canvas 576: The cat got into the paint!",
+    "icon": "🖼️"
+  },
+  {
+    "id": "visit_327",
+    "name": "Cupcakes vs Muffins",
+    "description": "Visited Canvas 327: Cupcakes vs Muffins",
+    "icon": "🖼️"
+  },
+  {
+    "id": "visit_624",
+    "name": "Darkroom",
+    "description": "Visited Canvas 624: Darkroom",
+    "icon": "🖼️"
+  },
+  {
+    "id": "visit_587",
+    "name": "BasePaint Antiques",
+    "description": "Visited Canvas 587: BasePaint Antiques",
+    "icon": "🖼️"
+  },
+  {
+    "id": "visit_823",
+    "name": "An Amazing Bookshelf",
+    "description": "Visited Canvas 823: An Amazing Bookshelf",
+    "icon": "🖼️"
+  },
+  {
+    "id": "konami_code",
+    "name": "Up Up Down Down...",
+    "description": "Entered the legendary Konami Code and unlocked dev mode",
+    "icon": "🕹️",
+    "secret": true
+  }
+]

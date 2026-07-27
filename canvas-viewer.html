@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BasePaint - Canvas Viewer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1a1a1a;
+            color: #00ff88;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            color: #00ff88;
+            font-size: 32px;
+        }
+
+        .canvas-container {
+            background: #0a0a0a;
+            padding: 30px;
+            border-radius: 12px;
+            border: 3px solid #00ff88;
+            display: inline-block;
+            margin-bottom: 30px;
+        }
+
+        canvas {
+            border: 2px solid #555;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        .back-button {
+            background: #00ff88;
+            color: #1a1a1a;
+            border: none;
+            padding: 15px 40px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .back-button:hover {
+            background: #00cc6a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 255, 136, 0.4);
+        }
+
+        .error {
+            color: #ff4444;
+            font-size: 18px;
+        }
+        
+        .canvas-info-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 255, 136, 0.9);
+            color: #1a1a1a;
+            border: 2px solid #00ff88;
+            padding: 8px 12px;
+            font-size: 24px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            white-space: nowrap;
+            overflow: hidden;
+            max-width: 50px;
+        }
+        
+        .canvas-info-button:hover {
+            max-width: 600px;
+            padding: 8px 16px;
+            background: rgba(0, 255, 136, 1);
+        }
+        
+        .canvas-info-icon {
+            display: inline-block;
+        }
+        
+        .canvas-info-text {
+            display: inline-block;
+            margin-left: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .canvas-info-button:hover .canvas-info-text {
+            opacity: 1;
+        }
+        
+        /* Achievement System */
+        .achievement-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #00ff88;
+            color: #1a1a1a;
+            border: 2px solid #00ff88;
+            padding: 10px 20px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 8px;
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+        
+        .achievement-button:hover {
+            background: #00cc6a;
+            transform: scale(1.05);
+        }
+        
+        .achievement-notification {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: rgba(0, 255, 136, 0.95);
+            color: #1a1a1a;
+            border: 3px solid #00ff88;
+            border-radius: 12px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            z-index: 1001;
+            min-width: 300px;
+            box-shadow: 0 4px 20px rgba(0, 255, 136, 0.5);
+            animation: slideInFade 0.5s ease-out, slideOutFade 0.5s ease-in 3.5s;
+        }
+        
+        @keyframes slideInFade {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOutFade {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+        
+        .achievement-notification-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .achievement-notification-icon {
+            font-size: 40px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .achievement-notification-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .achievement-notification-desc {
+            font-size: 14px;
+            color: #0a0a0a;
+        }
+        
+        .achievement-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            overflow-y: auto;
+        }
+        
+        .achievement-modal-content {
+            background: #1a1a1a;
+            border: 3px solid #00ff88;
+            border-radius: 12px;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            position: relative;
+        }
+        
+        .achievement-modal-header {
+            font-size: 28px;
+            color: #00ff88;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .achievement-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 30px;
+            color: #00ff88;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .achievement-modal-close:hover {
+            color: #00cc6a;
+        }
+        
+        .achievement-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .achievement-item {
+            background: #2a2a2a;
+            border: 2px solid #444;
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .achievement-item.unlocked {
+            border-color: #00ff88;
+            background: #1a3a2a;
+        }
+        
+        .achievement-item-icon {
+            font-size: 32px;
+            min-width: 40px;
+            text-align: center;
+        }
+        
+        .achievement-item-icon.locked {
+            filter: grayscale(100%);
+            opacity: 0.3;
+        }
+        
+        .achievement-item-info {
+            flex: 1;
+        }
+        
+        .achievement-item-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #00ff88;
+            margin-bottom: 5px;
+        }
+        
+        .achievement-item-name.locked {
+            color: #666;
+        }
+        
+        .achievement-item-desc {
+            font-size: 14px;
+            color: #aaa;
+        }
+        
+        .achievement-item-desc.locked {
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="canvas-container">
+            <canvas id="display-canvas"></canvas>
+        </div>
+
+        <br>
+        <button class="back-button" onclick="goBack()">← Return to Overworld</button>
+    </div>
+    
+    <!-- Achievement System UI -->
+    <button class="achievement-button" onclick="openAchievementModal()">🏆 Achievements</button>
+    
+    <!-- Canvas Info Button -->
+    <a id="canvas-info-button" class="canvas-info-button" href="#" target="_blank">
+        <span class="canvas-info-icon">🖼️</span>
+        <span class="canvas-info-text" id="canvas-info-text">Canvas</span>
+    </a>
+    
+    <div id="achievement-modal" class="achievement-modal">
+        <div class="achievement-modal-content">
+            <button class="achievement-modal-close" onclick="closeAchievementModal()">×</button>
+            <div class="achievement-modal-header">🏆 Achievements</div>
+            <div id="achievement-list" class="achievement-list"></div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button onclick="clearAllAchievements()" style="background: #ff4444; color: white; border: 2px solid #ff4444; padding: 10px 20px; font-family: 'Courier New', monospace; font-weight: bold; cursor: pointer; border-radius: 8px;">Clear All Achievements</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('display-canvas');
+        const ctx = canvas.getContext('2d');
+        const scale = 3;
+        const CANVAS_WIDTH = 256;
+        const CANVAS_HEIGHT = 256;
+
+        // Get canvas number from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const canvasNumber = urlParams.get('canvas');
+        
+        // Achievement System
+        let achievements = [];
+        let unlockedAchievements = new Set();
+        let achievementNotificationQueue = [];
+        let currentNotification = null;
+        
+        async function loadAchievements() {
+            try {
+                const response = await fetch('assets/achievements.json');
+                if (!response.ok) throw new Error('File not found');
+                achievements = await response.json();
+            } catch (error) {
+                console.warn('⚠️ Could not load achievements.json');
+                achievements = [];
+            }
+            
+            const saved = localStorage.getItem('basepaint_achievements');
+            if (saved) {
+                unlockedAchievements = new Set(JSON.parse(saved));
+            }
+        }
+        
+        function unlockAchievement(achievementId) {
+            if (unlockedAchievements.has(achievementId)) return;
+            
+            const achievement = achievements.find(a => a.id === achievementId);
+            if (!achievement) {
+                console.error(`Achievement ${achievementId} not found`);
+                return;
+            }
+            
+            unlockedAchievements.add(achievementId);
+            localStorage.setItem('basepaint_achievements', JSON.stringify([...unlockedAchievements]));
+            console.log(`🏆 Achievement unlocked: ${achievement.name}`);
+            
+            achievementNotificationQueue.push(achievement);
+            if (!currentNotification) {
+                showNextNotification();
+            }
+        }
+        
+        function showNextNotification() {
+            if (achievementNotificationQueue.length === 0) {
+                currentNotification = null;
+                return;
+            }
+            
+            const achievement = achievementNotificationQueue.shift();
+            currentNotification = achievement;
+            
+            const notification = document.createElement('div');
+            notification.className = 'achievement-notification';
+            notification.innerHTML = `
+                <div class="achievement-notification-title">🏆 Achievement Unlocked!</div>
+                <div class="achievement-notification-icon">${achievement.icon}</div>
+                <div class="achievement-notification-name">${achievement.name}</div>
+                <div class="achievement-notification-desc">${achievement.description}</div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+                showNextNotification();
+            }, 4000);
+        }
+        
+        function openAchievementModal() {
+            const modal = document.getElementById('achievement-modal');
+            const list = document.getElementById('achievement-list');
+            
+            list.innerHTML = '';
+            
+            for (const achievement of achievements) {
+                const isUnlocked = unlockedAchievements.has(achievement.id);
+                
+                const item = document.createElement('div');
+                item.className = `achievement-item ${isUnlocked ? 'unlocked' : ''}`;
+                
+                item.innerHTML = `
+                    <div class="achievement-item-icon ${isUnlocked ? '' : 'locked'}">
+                        ${isUnlocked ? achievement.icon : '🔒'}
+                    </div>
+                    <div class="achievement-item-info">
+                        <div class="achievement-item-name ${isUnlocked ? '' : 'locked'}">
+                            ${isUnlocked ? achievement.name : '?????'}
+                        </div>
+                        <div class="achievement-item-desc ${isUnlocked ? '' : 'locked'}">
+                            ${isUnlocked ? achievement.description : '?????'}
+                        </div>
+                    </div>
+                `;
+                
+                list.appendChild(item);
+            }
+            
+            modal.style.display = 'block';
+        }
+        
+        function closeAchievementModal() {
+            document.getElementById('achievement-modal').style.display = 'none';
+        }
+        
+        function clearAllAchievements() {
+            if (confirm('Are you sure you want to clear all achievements? This cannot be undone.')) {
+                unlockedAchievements.clear();
+                localStorage.removeItem('basepaint_achievements');
+                openAchievementModal();
+            }
+        }
+        
+        document.addEventListener('click', (e) => {
+            const modal = document.getElementById('achievement-modal');
+            if (e.target === modal) {
+                closeAchievementModal();
+            }
+        });
+        
+        // Load achievements on start
+        const achievementsReady = loadAchievements();
+        
+        // Load themes
+        let themes = {};
+        
+        async function loadThemes() {
+            try {
+                const response = await fetch('assets/basepaint_themes.json');
+                themes = await response.json();
+            } catch (error) {
+                console.warn('Could not load themes, using fallback');
+                // Fallback themes for canvases in use
+                themes = {
+                    "201": "Stained Glass Window",
+                    "237": "Beer!",
+                    "327": "Cupcakes vs Muffins",
+                    "375": "Bakery",
+                    "561": "Love Your Pet Day",
+                    "576": "The cat got into the paint!",
+                    "587": "BasePaint Antiques",
+                    "624": "Darkroom",
+                    "700": "BasePaint Artist Studio",
+                    "823": "An Amazing Bookshelf",
+                    "927": "Hospital",
+                    "939": "Tiny Village"
+                };
+            }
+        }
+        
+        // Keypress to return to overworld
+        document.addEventListener('keydown', () => {
+            goBack();
+        });
+        
+        if (!canvasNumber) {
+            document.querySelector('.container').innerHTML = `
+                <h1 class="error">Error: No canvas specified</h1>
+                <p>Please provide a canvas number in the URL (e.g., ?canvas=375)</p>
+                <br>
+                <button class="back-button" onclick="goBack()">← Return to Overworld</button>
+            `;
+        } else {
+            // Set canvas info button URL immediately
+            const infoButton = document.getElementById('canvas-info-button');
+            const infoText = document.getElementById('canvas-info-text');
+            infoButton.href = `https://basepaint.xyz/canvas/${canvasNumber}`;
+            
+            // Load themes and update text
+            loadThemes().then(() => {
+                const theme = themes[canvasNumber] || `Day ${canvasNumber}`;
+                infoText.textContent = `Canvas ${canvasNumber}: ${theme}`;
+            }).catch(() => {
+                // Fallback if themes don't load
+                infoText.textContent = `Canvas ${canvasNumber}`;
+            });
+            
+            // Unlock achievement for visiting this canvas (once achievements are loaded)
+            achievementsReady.then(() => {
+                unlockAchievement(`visit_${canvasNumber}`);
+            });
+            
+            // Load and display the canvas
+            const img = new Image();
+            img.onload = () => {
+                canvas.width = CANVAS_WIDTH * scale;
+                canvas.height = CANVAS_HEIGHT * scale;
+                ctx.imageSmoothingEnabled = false;
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            };
+            img.onerror = () => {
+                document.querySelector('.container').innerHTML = `
+                    <h1 class="error">Error: Canvas ${canvasNumber} not found</h1>
+                    <p>Could not load day-${canvasNumber}.png</p>
+                    <br>
+                    <button class="back-button" onclick="goBack()">← Return to Overworld</button>
+                `;
+            };
+            img.src = `assets/day-${canvasNumber}.png`;
+        }
+
+        function goBack() {
+            // Always return to canvas 939 (the overworld)
+            window.location.href = 'canvas-navigator.html';
+        }
+    </script>
+</body>
+</html>
