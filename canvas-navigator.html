@@ -49,6 +49,11 @@
             font-weight: bold;
             letter-spacing: 0.5px;
             text-transform: uppercase;
+            text-decoration: none;
+        }
+
+        .site-header-brand:hover {
+            color: #fde047;
         }
 
         .site-header-link {
@@ -207,8 +212,8 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: #ff0000;  /* Bright red for debugging */
-            border: 10px solid #ffff00;  /* Thick yellow border */
+            background: #1E2735;
+            border: 3px solid #fde047;
             border-radius: 8px;
             padding: 30px;
             text-align: center;
@@ -224,12 +229,13 @@
         .message-popup h3 {
             color: #fde047;
             margin-bottom: 15px;
-            font-size: 20px;
+            font-size: 26px;
         }
 
         .message-popup p {
             color: #ccc;
             margin-bottom: 20px;
+            font-size: 14px;
             line-height: 1.5;
         }
 
@@ -487,14 +493,15 @@
             justify-content: center;
             white-space: nowrap;
             overflow: hidden;
-            width: 50px;
+            min-width: 50px;
+            max-width: 50px;
             height: 50px;
             padding: 0;
             z-index: 900;
         }
 
         .canvas-info-button:hover {
-            width: auto;
+            min-width: 0;
             max-width: 600px;
             padding: 8px 16px;
             background: rgba(253, 224, 71, 1);
@@ -525,7 +532,7 @@
 </head>
 <body>
     <header class="site-header">
-        <span class="site-header-brand">BasePaint World</span>
+        <a class="site-header-brand" href="index.html">BasePaint World</a>
         <a class="site-header-link" href="https://basepaint.xyz" target="_blank" rel="noopener">basepaint.xyz &#8599;</a>
     </header>
 
@@ -647,8 +654,9 @@
         const CANVAS_HEIGHT = 256;
         const COLLISION_COLOR = '#FF00FF';  // Magenta - collision only
         const DOOR_COLOR = '#00FFFF';        // Cyan - doors
-        const OVERLAY_COLOR = '#FFFF00';     // Yellow - overlay only (draws over player)
-        const SOLID_OVERLAY_COLOR = '#FF8800'; // Orange - collision AND overlay
+        const OVERLAY_COLOR = '#FFFF00';     // Yellow - always drawn above player (roofs, signs, trim)
+        const SOLID_OVERLAY_COLOR = '#FF8800'; // Orange - collision + always drawn above player
+        const SORTED_OVERLAY_COLOR = '#00FF00'; // Green - non-collision, true Y-sorted overlay (trees, walk-around objects)
 
         // Helper to check if colors match (with tiny tolerance for PNG compression)
         function isMarkerColor(actualColor, expectedColor) {
@@ -824,47 +832,54 @@
                 
                 // Track which pixels we've already processed
                 const processed = new Set();
-                
+
                 let yellowPixelCount = 0;
                 let orangePixelCount = 0;
-                
-                // Find all connected regions of yellow/orange pixels
+                let greenPixelCount = 0;
+
+                // Find all connected regions of yellow/orange (always-above) or green (Y-sorted) pixels
                 for (let y = 0; y < mapCanvas.height; y++) {
                     for (let x = 0; x < mapCanvas.width; x++) {
                         const idx = (y * mapCanvas.width + x) * 4;
                         const key = `${x},${y}`;
-                        
+
                         if (processed.has(key)) continue;
-                        
+
                         const r = mapData.data[idx];
                         const g = mapData.data[idx + 1];
                         const b = mapData.data[idx + 2];
-                        
+
                         const isYellow = (r >= 250 && g >= 250 && b <= 5);
                         const isOrange = (r >= 250 && g >= 130 && g <= 140 && b <= 5);
-                        
-                        if (isYellow || isOrange) {
-                            // Found a new region - flood fill to get all connected pixels
-                            const region = floodFillRegion(x, y, mapData, displayData, processed, mapCanvas.width, mapCanvas.height);
-                            
+                        const isGreen = (r <= 5 && g >= 250 && b <= 5);
+                        const isSorted = isGreen;
+
+                        if (isYellow || isOrange || isSorted) {
+                            // Found a new region - flood fill to get all connected pixels of the same class
+                            const region = floodFillRegion(x, y, mapData, displayData, processed, mapCanvas.width, mapCanvas.height, isSorted);
+
                             if (region.pixels.length > 0) {
                                 overlayRegions.push(region);
                                 if (isYellow) yellowPixelCount += region.pixels.length;
                                 if (isOrange) orangePixelCount += region.pixels.length;
+                                if (isGreen) greenPixelCount += region.pixels.length;
                             }
                         }
                     }
                 }
-                
-                console.log(`✅ Found ${overlayRegions.length} overlay regions: ${yellowPixelCount} yellow pixels, ${orangePixelCount} orange pixels`);
+
+                console.log(`✅ Found ${overlayRegions.length} overlay regions: ${yellowPixelCount} yellow, ${orangePixelCount} orange, ${greenPixelCount} green pixels`);
             } catch (error) {
                 console.error('❌ Error in extractOverlayLayer:', error);
                 overlayRegions = [];
             }
         }
         
-        // Flood fill to find a connected region of yellow/orange pixels
-        function floodFillRegion(startX, startY, mapData, displayData, processed, width, height) {
+        // Flood fill to find a connected region of same-class overlay pixels
+        // (yellow/orange = always-above; green = true Y-sorted). isSortedClass
+        // decides which class this region belongs to, so a green region never
+        // merges with an adjacent yellow/orange one or vice versa.
+        function floodFillRegion(startX, startY, mapData, displayData, processed, width, height, isSortedClass) {
             const region = {
                 minX: startX,
                 maxX: startX,
@@ -872,30 +887,33 @@
                 maxY: startY,
                 pixels: [], // Array of {x, y, r, g, b, a}
                 canvas: null,
-                sortY: startY // Y coordinate used for sorting (bottom of region)
+                sortY: startY, // Y coordinate used for sorting (bottom of region)
+                alwaysAbove: !isSortedClass
             };
-            
+
             const queue = [{x: startX, y: startY}];
             const regionPixels = new Map(); // Use map to prevent duplicates
-            
+
             while (queue.length > 0) {
                 const {x, y} = queue.shift();
                 const key = `${x},${y}`;
-                
+
                 if (processed.has(key) || x < 0 || x >= width || y < 0 || y >= height) {
                     continue;
                 }
-                
+
                 const idx = (y * width + x) * 4;
                 const r = mapData.data[idx];
                 const g = mapData.data[idx + 1];
                 const b = mapData.data[idx + 2];
-                
+
                 const isYellow = (r >= 250 && g >= 250 && b <= 5);
                 const isOrange = (r >= 250 && g >= 130 && g <= 140 && b <= 5);
-                
-                if (!isYellow && !isOrange) continue;
-                
+                const isGreen = (r <= 5 && g >= 250 && b <= 5);
+                const matchesClass = isSortedClass ? isGreen : (isYellow || isOrange);
+
+                if (!matchesClass) continue;
+
                 processed.add(key);
                 
                 // Store pixel data from display image
@@ -923,10 +941,10 @@
             
             // Convert map to array
             region.pixels = Array.from(regionPixels.values());
-            
+
             // Use bottom Y coordinate for sorting (maxY is the closest point to viewer)
             region.sortY = region.maxY;
-            
+
             // Create a canvas for this region
             if (region.pixels.length > 0) {
                 const regionWidth = region.maxX - region.minX + 1;
@@ -1458,7 +1476,7 @@
                     unlockAchievement(achievementId);
                 }
                 
-                showMessage('More Canvases Coming Soon!', `You've reached the ${direction} edge.`);
+                showMessage(`You've reached the ${direction} edge!`, 'This will link to another canvas in the future.');
                 edgeMessageShown = true;
             }
             
@@ -1479,10 +1497,12 @@
             // 2. Y-sorted rendering: player and overlay regions
             // Player's sort position is their bottom Y coordinate (feet)
             const playerSortY = player.y;
-            
-            // Draw overlay regions that are BEHIND the player (sortY < playerSortY)
+
+            // Draw sorted-overlay regions that are BEHIND the player (sortY < playerSortY).
+            // Always-above regions (roofs, signs, trim) never draw here - they always
+            // wait until after the player, regardless of position.
             for (const region of overlayRegions) {
-                if (region.sortY < playerSortY && region.canvas) {
+                if (!region.alwaysAbove && region.sortY < playerSortY && region.canvas) {
                     ctx.drawImage(
                         region.canvas,
                         region.minX * scale,
@@ -1528,9 +1548,10 @@
                 );
             }
 
-            // 4. Draw overlay regions that are IN FRONT of the player (sortY >= playerSortY)
+            // 4. Draw overlay regions that go IN FRONT of the player: always-above
+            // regions unconditionally, plus sorted regions whose sortY >= playerSortY
             for (const region of overlayRegions) {
-                if (region.sortY >= playerSortY && region.canvas) {
+                if ((region.alwaysAbove || region.sortY >= playerSortY) && region.canvas) {
                     ctx.drawImage(
                         region.canvas,
                         region.minX * scale,
@@ -1571,9 +1592,10 @@
 
             let tileType = 'Ground';
             if (isMarkerColor(tileColor, COLLISION_COLOR)) tileType = 'Wall';
-            else if (isMarkerColor(tileColor, SOLID_OVERLAY_COLOR)) tileType = 'Wall (Overlay)';
+            else if (isMarkerColor(tileColor, SOLID_OVERLAY_COLOR)) tileType = 'Wall (Always Above)';
             else if (isMarkerColor(tileColor, DOOR_COLOR)) tileType = 'Door';
-            else if (isMarkerColor(tileColor, OVERLAY_COLOR)) tileType = 'Overlay';
+            else if (isMarkerColor(tileColor, OVERLAY_COLOR)) tileType = 'Overlay (Always Above)';
+            else if (isMarkerColor(tileColor, SORTED_OVERLAY_COLOR)) tileType = 'Overlay (Y-Sorted)';
 
             document.getElementById('tile-info').textContent = tileType;
 

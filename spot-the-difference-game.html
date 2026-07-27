@@ -50,6 +50,11 @@
             font-weight: bold;
             letter-spacing: 0.5px;
             text-transform: uppercase;
+            text-decoration: none;
+        }
+
+        .site-header-brand:hover {
+            color: #fde047;
         }
 
         .site-header-link {
@@ -296,13 +301,14 @@
             justify-content: center;
             white-space: nowrap;
             overflow: hidden;
-            width: 50px;
+            min-width: 50px;
+            max-width: 50px;
             height: 50px;
             padding: 0;
         }
 
         .canvas-info-button:hover {
-            width: auto;
+            min-width: 0;
             max-width: 600px;
             padding: 8px 16px;
             background: rgba(253, 224, 71, 1);
@@ -520,7 +526,7 @@
 </head>
 <body>
     <header class="site-header">
-        <span class="site-header-brand">BasePaint World</span>
+        <a class="site-header-brand" href="index.html">BasePaint World</a>
         <a class="site-header-link" href="https://basepaint.xyz" target="_blank" rel="noopener">basepaint.xyz &#8599;</a>
     </header>
 

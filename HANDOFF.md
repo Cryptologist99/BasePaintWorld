@@ -1,63 +1,69 @@
-# BasePaint World - Session Handoff
+# BasePaint World — Handoff (2026-07-27)
 
-Context for picking up work in Claude Code. This session (claude.ai chat) was building
-toward a "demo-ready in 2 days" push. See TODO.md and PROJECT_DOCS.md for full project
-context — this doc is specifically about what's IN PROGRESS or PENDING right now.
+## Project
+Browser-based pixel art exploration game on BasePaint.xyz CC0 canvases. Vanilla JS, HTML5 Canvas, no build step. Git repo: `github.com/Cryptologist99/BasePaintWorld`. Local: `C:\Vibe\BasePaintWorld\Game`.
 
-## In Progress / Just Completed (verify these landed in local files)
+## Files
+| File | Purpose |
+|------|---------|
+| `index.html` | Start screen |
+| `canvas-navigator.html` | Canvas 939 overworld (main) |
+| `canvas-navigator-927.html` | Canvas 927 hospital |
+| `canvas-viewer.html` | Universal static canvas viewer |
+| `spot-the-difference-game.html` | Spot-the-difference minigame |
+| `assets/achievements.json` | 19 achievements (1 secret: konami_code) |
+| `TODO.md` | Task list |
 
-1. **Y-sorting ported to Canvas 927** (canvas-navigator-927.html)
-   - Same flood-fill region system as canvas-navigator.html (939)
-   - Replaced the old single-canvas overlay draw with per-region Y-sorted draw calls
-   - Door sprite animation still draws right after background, before Y-sorted layers
-   - **Verify:** confirm `overlayRegions`, `floodFillRegion()`, and the updated `render()`
-     function actually made it into your local canvas-navigator-927.html
+## Design System
+- BG: `#1E2735`, Accent: `#fde047`, Header: `#073eb1`
+- Font: Roboto Mono
+- Persistent header (36px) on all pages; links back to `basepaint.xyz`
+- "BasePaint World" brand in header links to `index.html` (same tab)
 
-2. **Achievements expanded to one per canvas** (assets/achievements.json)
-   - Added 12 new achievements: `visit_939`, `visit_927`, `visit_201`, `visit_375`,
-     `visit_237`, `visit_561`, `visit_700`, `visit_576`, `visit_327`, `visit_624`,
-     `visit_587`, `visit_823` — using real BasePaint themes (Tiny Village, Hospital,
-     Stained Glass Window, Bakery, Beer!, Love Your Pet Day, BasePaint Artist Studio,
-     The Cat Got Into the Paint!, Cupcakes vs Muffins, Darkroom, BasePaint Antiques,
-     An Amazing Bookshelf) alongside the original 4 edge achievements.
-   - Ported the FULL achievement system (CSS + button + modal + JS) into
-     canvas-navigator-927.html and canvas-viewer.html — previously ONLY
-     canvas-navigator.html (939) had it.
-   - canvas-viewer.html now calls `unlockAchievement('visit_' + canvasNumber)`
-     dynamically based on the `?canvas=` URL param, gated behind an
-     `achievementsReady` promise so it doesn't fire before achievements.json loads.
-   - canvas-navigator-927.html calls `unlockAchievement('visit_927')` in `initializeGame()`.
-   - **NOT YET DONE:** canvas-navigator.html (939) still needs
-     `unlockAchievement('visit_939')` added to its `initializeGame()` function
-     (was about to do this when we switched to Claude Code). Location was around
-     line 1020 in that file.
+## Marker Color System (map PNG overlay layer)
+| Color | Hex | Behavior |
+|-------|-----|----------|
+| Magenta | `#FF00FF` | Collision (solid wall) |
+| Cyan | `#00FFFF` | Door / transition |
+| Yellow | `#FFFF00` | Always-above overlay (non-collision) |
+| Orange | `#FF8000` | Always-above overlay + collision |
+| Green | `#00FF00` | True Y-sorted overlay (non-collision) — player walks behind when north, in front when south |
 
-## Not Started Yet
+Green is the newest addition. User will repaint tree canopies / walk-around objects green in Aseprite map files for 939 and 927.
 
-3. **Visual polish / fullscreen pass** — this was the next big task, not started.
-   User's complaint: "it feels like a game in a window and there's weirdness with
-   scrolling... not sure how to fix it so it's more of a fullscreen experience."
-   Likely needs: removing the `.container` max-width/centering/border treatment on
-   the game screens (939, 927), checking body/html overflow and canvas scaling so
-   the game canvas fills the viewport without page scroll, revisiting the
-   `.canvas-container` border/padding box that currently makes it look boxed-in.
+## Achievement System
+- Stored in `localStorage` key `basepaint_achievements`
+- JSON: `assets/achievements.json` — 19 entries, `"secret": true` hides from modal until unlocked
+- Race condition fix: `achievementsLoaded` flag gates `checkGameReady()`
+- Konami code (up up down down left right left right B A) unlocks secret achievement + dev panels
+- Dev panel visibility stored separately in `basepaint_devmode_visible` localStorage key
+- Achievement order: edge alerts → spot-the-difference (Eagle Eye, Speed Spotter <30s) → canvas visits → konami (secret)
 
-## Reference: Full TODO List
+## Known-Good Features
+- Y-sorting fully implemented in both 939 and 927
+- Spot-the-difference: responsive one-page layout, confetti on completion, click-accuracy fix, side panel at >=900px
+- Canvas-info button: smooth min-width/max-width animation, icon centered
+- Edge message popup: #1E2735 bg, #fde047 border, "You've reached the X edge" as primary text
+- Mint button on start screen opens in new tab
+- All pages: Roboto Mono font, site-header
 
-See TODO.md in project root for the full prioritized list. As of this handoff:
-- Priority 1 (core loop works end-to-end): ✅ complete
-- Priority 2 (fill gaps): Y-sorting on 927 ✅, file-inputs hidden on both ✅,
-  clear-all achievements tested ✅, canvas info button text ✅
-- Priority 3 (polish): per-canvas achievements ✅ (just completed above),
-  fullscreen/visual polish ⬜ (not started), loading states/error handling ⬜,
-  notification queue overlap check ⬜, mobile responsive sanity check ⬜
+## TODO (priority order)
+1. Visual polish / fullscreen — boxed-in container on 939 and 927
+2. Return to Overworld button — treatment on canvas-viewer.html (may move to side)
+3. Resizing — test all pages at different viewport sizes
+4. Add objects to overworld — user will paint green (#00FF00) areas in Aseprite first
+5. New door animation
+6. Hospital achievements — specific to canvas 927
+7. About page
+8. Update achievement display names
+9. Background music
+10. Loading states / error handling
+11. Achievement notification overlap check
+12. Mobile / touch controls
 
-## Key Files Reference
+## Last Commit State
+Y-sorting changes in 927 just finished but NOT yet committed. Run:
 
-- `canvas-navigator.html` — Canvas 939 (main overworld), 12 doors
-- `canvas-navigator-927.html` — Canvas 927 (navigable, no doors, bottom edge exits to 939)
-- `canvas-viewer.html` — universal static viewer, `?canvas=XXX`, any key returns to overworld
-- `start-screen.html` — menu, defaults to "Enter the Canvas"
-- `assets/achievements.json` — 16 achievements total (4 edge + 12 visit)
-- `assets/basepaint_themes.json` — all ~1000 BasePaint canvas themes (scraped via
-  scrape_basepaint_api.py using BasePaint's own API, not OpenSea)
+  git add canvas-navigator-927.html
+  git commit -m "Add green Y-sorted overlay color to canvas 927"
+  git push
