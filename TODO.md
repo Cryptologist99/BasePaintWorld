@@ -14,7 +14,6 @@
 - [ ] Background music
 - [ ] Update achievement names
 - [ ] Add an About page
-- [ ] Change "Speed Spotter" achievement threshold from under 1 minute to under 30 seconds
 
 ## Robustness
 - [ ] Loading states / error handling (e.g. what shows while assets are still loading, or if an asset fails)

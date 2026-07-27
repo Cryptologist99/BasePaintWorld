@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BasePaint Canvas Navigator - Day 927</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,14 +15,50 @@
         }
 
         body {
-            font-family: 'Courier New', monospace;
-            background: #1a1a1a;
-            color: #00ff88;
+            font-family: 'Roboto Mono', 'Courier New', monospace;
+            background: #1E2735;
+            color: #fde047;
             padding: 20px;
+            padding-top: 58px;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+        }
+
+        .site-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            background: #073eb1;
+            border-bottom: 2px solid #fde047;
+            font-family: 'Roboto Mono', 'Courier New', monospace;
+            font-size: 13px;
+            z-index: 1500;
+            box-sizing: border-box;
+        }
+
+        .site-header-brand {
+            color: #ffffff;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .site-header-link {
+            color: #fde047;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .site-header-link:hover {
+            color: #ffffff;
         }
 
         .container {
@@ -30,16 +69,16 @@
         h1 {
             text-align: center;
             margin-bottom: 20px;
-            color: #00ff88;
+            color: #fde047;
             font-size: 32px;
         }
 
         .game-info {
             position: relative;
-            background: #2a2a2a;
+            background: #283447;
             padding: 15px;
             border-radius: 8px;
-            border: 2px solid #00ff88;
+            border: 2px solid #fde047;
             margin-bottom: 20px;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -75,16 +114,16 @@
         }
 
         .info-value {
-            color: #00ff88;
+            color: #fde047;
             font-size: 18px;
             font-weight: bold;
         }
 
         .canvas-container {
-            background: #0a0a0a;
+            background: #141A24;
             padding: 20px;
             border-radius: 8px;
-            border: 2px solid #00ff88;
+            border: 2px solid #fde047;
             display: flex;
             justify-content: center;
             margin-bottom: 20px;
@@ -106,11 +145,11 @@
         }
 
         button {
-            background: #00ff88;
-            color: #1a1a1a;
+            background: #fde047;
+            color: #1E2735;
             border: none;
             padding: 12px 24px;
-            font-family: 'Courier New', monospace;
+            font-family: 'Roboto Mono', 'Courier New', monospace;
             font-weight: bold;
             cursor: pointer;
             border-radius: 4px;
@@ -119,7 +158,7 @@
         }
 
         button:hover {
-            background: #00cc6a;
+            background: #facc15;
             transform: translateY(-2px);
         }
 
@@ -131,15 +170,15 @@
         }
 
         .file-inputs {
-            background: #2a2a2a;
+            background: #283447;
             padding: 20px;
             border-radius: 8px;
-            border: 2px solid #00ff88;
+            border: 2px solid #fde047;
             margin-bottom: 20px;
         }
 
         .file-inputs h3 {
-            color: #00ff88;
+            color: #fde047;
             margin-bottom: 15px;
         }
 
@@ -155,11 +194,11 @@
 
         input[type="file"] {
             background: #333;
-            color: #00ff88;
+            color: #fde047;
             padding: 10px;
-            border: 1px solid #00ff88;
+            border: 1px solid #fde047;
             border-radius: 4px;
-            font-family: 'Courier New', monospace;
+            font-family: 'Roboto Mono', 'Courier New', monospace;
             width: 100%;
         }
 
@@ -183,7 +222,7 @@
         }
 
         .message-popup h3 {
-            color: #00ff88;
+            color: #fde047;
             margin-bottom: 15px;
             font-size: 20px;
         }
@@ -217,7 +256,7 @@
 
         .debug-info {
             position: relative;
-            background: #0a0a0a;
+            background: #141A24;
             padding: 10px;
             border-radius: 4px;
             font-size: 12px;
@@ -248,9 +287,9 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: rgba(0, 255, 136, 0.9);
-            color: #1a1a1a;
-            border: 2px solid #00ff88;
+            background: rgba(253, 224, 71, 0.9);
+            color: #1E2735;
+            border: 2px solid #fde047;
             font-size: 24px;
             cursor: pointer;
             border-radius: 8px;
@@ -271,7 +310,7 @@
             width: auto;
             max-width: 600px;
             padding: 8px 16px;
-            background: rgba(0, 255, 136, 1);
+            background: rgba(253, 224, 71, 1);
         }
 
         .canvas-info-icon {
@@ -283,7 +322,7 @@
             width: 0;
             margin-left: 0;
             overflow: hidden;
-            font-family: 'Courier New', monospace;
+            font-family: 'Roboto Mono', 'Courier New', monospace;
             font-size: 16px;
             font-weight: bold;
             opacity: 0;
@@ -299,13 +338,13 @@
         /* Achievement System */
         .achievement-button {
             position: fixed;
-            top: 20px;
+            top: 48px;
             right: 20px;
-            background: #00ff88;
-            color: #1a1a1a;
-            border: 2px solid #00ff88;
+            background: #fde047;
+            color: #1E2735;
+            border: 2px solid #fde047;
             padding: 10px 20px;
-            font-family: 'Courier New', monospace;
+            font-family: 'Roboto Mono', 'Courier New', monospace;
             font-weight: bold;
             font-size: 16px;
             cursor: pointer;
@@ -315,23 +354,23 @@
         }
         
         .achievement-button:hover {
-            background: #00cc6a;
+            background: #facc15;
             transform: scale(1.05);
         }
         
         .achievement-notification {
             position: fixed;
-            top: 80px;
+            top: 108px;
             right: 20px;
-            background: rgba(0, 255, 136, 0.95);
-            color: #1a1a1a;
-            border: 3px solid #00ff88;
+            background: rgba(253, 224, 71, 0.95);
+            color: #1E2735;
+            border: 3px solid #fde047;
             border-radius: 12px;
             padding: 20px;
-            font-family: 'Courier New', monospace;
+            font-family: 'Roboto Mono', 'Courier New', monospace;
             z-index: 1001;
             min-width: 300px;
-            box-shadow: 0 4px 20px rgba(0, 255, 136, 0.5);
+            box-shadow: 0 4px 20px rgba(253, 224, 71, 0.5);
             animation: slideInFade 0.5s ease-out, slideOutFade 0.5s ease-in 3.5s;
         }
         
@@ -378,7 +417,7 @@
         
         .achievement-notification-desc {
             font-size: 14px;
-            color: #0a0a0a;
+            color: #141A24;
         }
         
         .achievement-modal {
@@ -394,8 +433,8 @@
         }
         
         .achievement-modal-content {
-            background: #1a1a1a;
-            border: 3px solid #00ff88;
+            background: #1E2735;
+            border: 3px solid #fde047;
             border-radius: 12px;
             max-width: 600px;
             margin: 50px auto;
@@ -405,7 +444,7 @@
         
         .achievement-modal-header {
             font-size: 28px;
-            color: #00ff88;
+            color: #fde047;
             margin-bottom: 20px;
             text-align: center;
             font-weight: bold;
@@ -416,15 +455,15 @@
             top: 15px;
             right: 20px;
             font-size: 30px;
-            color: #00ff88;
+            color: #fde047;
             cursor: pointer;
             background: none;
             border: none;
-            font-family: 'Courier New', monospace;
+            font-family: 'Roboto Mono', 'Courier New', monospace;
         }
         
         .achievement-modal-close:hover {
-            color: #00cc6a;
+            color: #facc15;
         }
         
         .achievement-list {
@@ -434,7 +473,7 @@
         }
         
         .achievement-item {
-            background: #2a2a2a;
+            background: #283447;
             border: 2px solid #444;
             border-radius: 8px;
             padding: 15px;
@@ -444,7 +483,7 @@
         }
         
         .achievement-item.unlocked {
-            border-color: #00ff88;
+            border-color: #fde047;
             background: #1a3a2a;
         }
         
@@ -466,7 +505,7 @@
         .achievement-item-name {
             font-size: 18px;
             font-weight: bold;
-            color: #00ff88;
+            color: #fde047;
             margin-bottom: 5px;
         }
         
@@ -485,6 +524,11 @@
     </style>
 </head>
 <body>
+    <header class="site-header">
+        <span class="site-header-brand">BasePaint World</span>
+        <a class="site-header-link" href="https://basepaint.xyz" target="_blank" rel="noopener">basepaint.xyz &#8599;</a>
+    </header>
+
     <div class="container">
         <div class="file-inputs" id="file-inputs">
             <h3>📁 Load Canvas Files</h3>
@@ -1572,7 +1616,7 @@
             <div class="achievement-modal-header">🏆 Achievements</div>
             <div id="achievement-list" class="achievement-list"></div>
             <div style="text-align: center; margin-top: 20px;">
-                <button onclick="clearAllAchievements()" style="background: #ff4444; color: white; border: 2px solid #ff4444; padding: 10px 20px; font-family: 'Courier New', monospace; font-weight: bold; cursor: pointer; border-radius: 8px;">Clear All Achievements</button>
+                <button onclick="clearAllAchievements()" style="background: #ff4444; color: white; border: 2px solid #ff4444; padding: 10px 20px; font-family: 'Roboto Mono', 'Courier New', monospace; font-weight: bold; cursor: pointer; border-radius: 8px;">Clear All Achievements</button>
             </div>
         </div>
     </div>
