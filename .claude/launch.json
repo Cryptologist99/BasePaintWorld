@@ -4,7 +4,7 @@
     {
       "name": "basepaint-game",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "8000", "--directory", "C:\\Vibe\\BasePaintGames\\Game"],
+      "runtimeArgs": ["-m", "http.server", "8000", "--directory", "C:\\Vibe\\BasePaintWorld\\Game"],
       "port": 8000
     }
   ]

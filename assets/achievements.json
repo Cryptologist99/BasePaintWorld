@@ -101,5 +101,17 @@
     "description": "Entered the legendary Konami Code and unlocked dev mode",
     "icon": "🕹️",
     "secret": true
+  },
+  {
+    "id": "spot_the_difference_complete",
+    "name": "Eagle Eye",
+    "description": "Found all the differences in the Spot the Difference minigame",
+    "icon": "🔍"
+  },
+  {
+    "id": "spot_the_difference_speedrun",
+    "name": "Speed Spotter",
+    "description": "Found all the differences in under 1 minute",
+    "icon": "⚡"
   }
 ]

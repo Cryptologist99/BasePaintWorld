@@ -251,40 +251,48 @@
             background: rgba(0, 255, 136, 0.9);
             color: #1a1a1a;
             border: 2px solid #00ff88;
-            padding: 8px 12px;
             font-size: 24px;
             cursor: pointer;
             border-radius: 8px;
             transition: all 0.3s;
             text-decoration: none;
-            display: inline-block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             white-space: nowrap;
             overflow: hidden;
-            max-width: 50px;
+            width: 50px;
+            height: 50px;
+            padding: 0;
             z-index: 900;
         }
-        
+
         .canvas-info-button:hover {
+            width: auto;
             max-width: 600px;
             padding: 8px 16px;
             background: rgba(0, 255, 136, 1);
         }
-        
+
         .canvas-info-icon {
-            display: inline-block;
+            flex-shrink: 0;
         }
-        
+
         .canvas-info-text {
-            display: inline-block;
-            margin-left: 8px;
+            flex-shrink: 0;
+            width: 0;
+            margin-left: 0;
+            overflow: hidden;
             font-family: 'Courier New', monospace;
             font-size: 16px;
             font-weight: bold;
             opacity: 0;
             transition: opacity 0.3s;
         }
-        
+
         .canvas-info-button:hover .canvas-info-text {
+            width: auto;
+            margin-left: 8px;
             opacity: 1;
         }
         
@@ -1195,14 +1203,11 @@
                 // Check edge of canvas - check if collision box touches or exceeds bounds
                 const collisionX = newX + Math.floor((player.width - player.collisionWidth) / 2);
                 const collisionY = newY - player.collisionHeight;
-                
-                console.log('Movement check - newX:', newX, 'newY:', newY, 'collisionX:', collisionX, 'collisionY:', collisionY);
-                
-                if (collisionX <= 0 || 
-                    collisionX + player.collisionWidth >= CANVAS_WIDTH || 
-                    collisionY <= 0 || 
+
+                if (collisionX <= 0 ||
+                    collisionX + player.collisionWidth >= CANVAS_WIDTH ||
+                    collisionY <= 0 ||
                     collisionY + player.collisionHeight >= CANVAS_HEIGHT) {
-                    console.log('EDGE DETECTED! Calling handleEdgeCollision');
                     handleEdgeCollision(newX, newY);
                     return;
                 }
@@ -1216,14 +1221,8 @@
                     const collisionCenterX = Math.floor(player.x + player.width / 2);
                     const collisionCenterY = Math.floor(player.y - player.collisionHeight);
                     const tileColor = getPixelColor(collisionCenterX, collisionCenterY);
-                    
-                    // Log every movement for debugging
-                    if (tileColor) {
-                        console.log('At', collisionCenterX, collisionCenterY, 'Color:', tileColor, 'isDoor:', isMarkerColor(tileColor, DOOR_COLOR));
-                    }
-                    
+
                     if (isMarkerColor(tileColor, DOOR_COLOR)) {
-                        console.log('Door detected! Calling handleDoor');
                         handleDoor(player.x, player.y);
                     }
                 }

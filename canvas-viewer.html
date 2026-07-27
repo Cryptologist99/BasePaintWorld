@@ -81,39 +81,47 @@
             background: rgba(0, 255, 136, 0.9);
             color: #1a1a1a;
             border: 2px solid #00ff88;
-            padding: 8px 12px;
             font-size: 24px;
             cursor: pointer;
             border-radius: 8px;
             transition: all 0.3s;
             text-decoration: none;
-            display: inline-block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             white-space: nowrap;
             overflow: hidden;
-            max-width: 50px;
+            width: 50px;
+            height: 50px;
+            padding: 0;
         }
-        
+
         .canvas-info-button:hover {
+            width: auto;
             max-width: 600px;
             padding: 8px 16px;
             background: rgba(0, 255, 136, 1);
         }
-        
+
         .canvas-info-icon {
-            display: inline-block;
+            flex-shrink: 0;
         }
-        
+
         .canvas-info-text {
-            display: inline-block;
-            margin-left: 8px;
+            flex-shrink: 0;
+            width: 0;
+            margin-left: 0;
+            overflow: hidden;
             font-family: 'Courier New', monospace;
             font-size: 16px;
             font-weight: bold;
             opacity: 0;
             transition: opacity 0.3s;
         }
-        
+
         .canvas-info-button:hover .canvas-info-text {
+            width: auto;
+            margin-left: 8px;
             opacity: 1;
         }
         
@@ -421,7 +429,10 @@
             
             for (const achievement of achievements) {
                 const isUnlocked = unlockedAchievements.has(achievement.id);
-                
+
+                // Secret achievements stay off the list entirely until unlocked
+                if (achievement.secret && !isUnlocked) continue;
+
                 const item = document.createElement('div');
                 item.className = `achievement-item ${isUnlocked ? 'unlocked' : ''}`;
                 
