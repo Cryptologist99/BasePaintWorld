@@ -108,6 +108,12 @@
             height: auto;
         }
 
+        .return-hint {
+            color: #aaa;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
         .back-button {
             background: #fde047;
             color: #1E2735;
@@ -384,8 +390,7 @@
             <canvas id="display-canvas"></canvas>
         </div>
 
-        <br>
-        <button class="back-button" onclick="goBack()">← Return to Overworld</button>
+        <p class="return-hint">Press any key to return</p>
     </div>
     
     <!-- Achievement System UI -->
@@ -574,8 +579,16 @@
             }
         }
         
-        // Keypress to return to overworld
-        document.addEventListener('keydown', () => {
+        // Keypress to return to overworld. Ignore OS auto-repeat and a brief
+        // window after load, since a movement key held down while walking
+        // through a door on the previous page is often still physically held
+        // when this page loads, and would otherwise bounce the player right
+        // back out.
+        const pageLoadTime = performance.now();
+        const KEY_IGNORE_WINDOW_MS = 400;
+        document.addEventListener('keydown', (e) => {
+            if (e.repeat) return;
+            if (performance.now() - pageLoadTime < KEY_IGNORE_WINDOW_MS) return;
             goBack();
         });
         
