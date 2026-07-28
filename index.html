@@ -63,6 +63,12 @@
             color: #ffffff;
         }
 
+        .site-header-links {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
         .container {
             position: relative;
             display: flex;
@@ -105,7 +111,10 @@
 <body>
     <header class="site-header">
         <a class="site-header-brand" href="index.html">BasePaint World</a>
-        <a class="site-header-link" href="https://basepaint.xyz" target="_blank" rel="noopener">basepaint.xyz &#8599;</a>
+        <div class="site-header-links">
+            <a class="site-header-link" href="about.html">About</a>
+            <a class="site-header-link" href="https://basepaint.xyz" target="_blank" rel="noopener">basepaint.xyz &#8599;</a>
+        </div>
     </header>
 
     <div class="container">

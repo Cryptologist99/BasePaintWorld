@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BasePaint World - About</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto Mono', 'Courier New', monospace;
+            background: #1E2735;
+            color: #fde047;
+            padding: 20px;
+            padding-top: 58px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        .site-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            background: #073eb1;
+            border-bottom: 2px solid #fde047;
+            font-family: 'Roboto Mono', 'Courier New', monospace;
+            font-size: 13px;
+            z-index: 1500;
+            box-sizing: border-box;
+        }
+
+        .site-header-brand {
+            color: #ffffff;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            text-decoration: none;
+        }
+
+        .site-header-brand:hover {
+            color: #fde047;
+        }
+
+        .site-header-link {
+            color: #fde047;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .site-header-link:hover {
+            color: #ffffff;
+        }
+
+        .site-header-links {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .container {
+            max-width: 700px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #fde047;
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        .about-content {
+            background: #283447;
+            border: 2px solid #fde047;
+            border-radius: 8px;
+            padding: 25px 30px;
+            color: #eee;
+            line-height: 1.6;
+        }
+
+        .about-content p {
+            margin-bottom: 16px;
+        }
+
+        .about-content ul {
+            margin: 0 0 16px 20px;
+        }
+
+        .about-content li {
+            margin-bottom: 6px;
+        }
+
+        .about-content a {
+            color: #fde047;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .about-content a:hover {
+            color: #facc15;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <a class="site-header-brand" href="index.html">BasePaint World</a>
+        <div class="site-header-links">
+            <a class="site-header-link" href="about.html">About</a>
+            <a class="site-header-link" href="https://basepaint.xyz" target="_blank" rel="noopener">basepaint.xyz &#8599;</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1>About</h1>
+        <div class="about-content">
+            <p>BasePaint World is a playable BasePaint experience built from BasePaint canvases. It includes navigable overworld canvases, as well as games and viewable canvases imbedded within that overworld. While it will probably never be fully up-to-date, the plan is to include every BasePaint canvas as an element of the world. I expect it will be a collaborative effort with many artists submitting ideas or fully-fledged pieces of the world to add on and integrate.</p>
+
+            <p>BasePaint World is currently in a demo state, but planned future features include:</p>
+
+            <ul>
+                <li>More canvases and locations</li>
+                <li>Additional games inside BasePaint World</li>
+                <li>More better music and sound effects</li>
+                <li>Wallet connection for canvas-holding achievements and unlocks</li>
+                <li>More playable characters with animated movement.</li>
+            </ul>
+
+            <p>BasePaint World was originally created by Cryptologist, <a href="https://x.com/cryptologist99" target="_blank" rel="noopener">x.com/cryptologist99</a></p>
+        </div>
+    </div>
+    <script src="assets/audio.js"></script>
+</body>
+</html>

@@ -25,10 +25,29 @@
         const savedAt = parseFloat(sessionStorage.getItem(BGM_SAVED_AT_KEY));
         if (!isNaN(savedTime)) {
             const elapsed = !isNaN(savedAt) ? Math.max(0, (Date.now() - savedAt) / 1000) : 0;
-            const resumeTime = savedTime + elapsed;
-            bgm.addEventListener('loadedmetadata', () => {
-                bgm.currentTime = bgm.duration ? resumeTime % bgm.duration : resumeTime;
-            }, { once: true });
+            let resumeTime = savedTime + elapsed;
+            let resumeApplied = false;
+
+            // Seeking a fresh element only works once the browser considers the
+            // target position seekable, which for a large file may not be true
+            // at loadedmetadata. Assigning currentTime too early silently clamps
+            // it back to 0 (a "restart"). So retry across several media events
+            // until the seek actually sticks.
+            const applyResume = () => {
+                if (resumeApplied || isNaN(bgm.duration) || !bgm.duration) return;
+                const target = resumeTime % bgm.duration;
+                const seekable = bgm.seekable;
+                const canSeek = seekable.length > 0 && seekable.end(seekable.length - 1) >= target;
+                if (!canSeek) return;
+                bgm.currentTime = target;
+                if (Math.abs(bgm.currentTime - target) < 1) {
+                    resumeApplied = true;
+                }
+            };
+
+            ['loadedmetadata', 'loadeddata', 'canplay', 'canplaythrough', 'progress', 'playing'].forEach(evt => {
+                bgm.addEventListener(evt, applyResume);
+            });
         }
 
         const tryPlay = () => bgm.play().catch(() => {});
