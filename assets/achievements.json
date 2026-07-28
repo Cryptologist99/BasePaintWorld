@@ -24,18 +24,6 @@
     "icon": "🌄"
   },
   {
-    "id": "spot_the_difference_complete",
-    "name": "Eagle Eye",
-    "description": "Found all the differences in the Spot the Difference minigame",
-    "icon": "🔍"
-  },
-  {
-    "id": "spot_the_difference_speedrun",
-    "name": "Speed Spotter",
-    "description": "Found all the differences in under 30 seconds",
-    "icon": "⚡"
-  },
-  {
     "id": "visit_939",
     "name": "Tiny Village",
     "description": "Visited Canvas 939: Tiny Village",
@@ -46,6 +34,38 @@
     "name": "Hospital",
     "description": "Visited Canvas 927: Hospital",
     "icon": "🖼️"
+  },
+  {
+    "id": "hidden_spot_mri",
+    "name": "MRI",
+    "description": "Waited outside the MRI room",
+    "icon": "🩻",
+    "secret": true
+  },
+  {
+    "id": "hidden_spot_water_cooler",
+    "name": "Thirst Slaked",
+    "description": "Found the hospital water cooler",
+    "icon": "💧",
+    "secret": true
+  },
+  {
+    "id": "visit_456",
+    "name": "Spot the Difference",
+    "description": "Visited Canvas 456: Spot the Difference",
+    "icon": "🖼️"
+  },
+  {
+    "id": "spot_the_difference_complete",
+    "name": "Eagle Eye",
+    "description": "Found all the differences in the Spot the Difference minigame",
+    "icon": "🔍"
+  },
+  {
+    "id": "spot_the_difference_speedrun",
+    "name": "Speed Spotter",
+    "description": "Found all the differences in under 30 seconds",
+    "icon": "⚡"
   },
   {
     "id": "visit_201",

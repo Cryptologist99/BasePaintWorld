@@ -638,6 +638,10 @@
             unlockedAchievements.add(achievementId);
             localStorage.setItem('basepaint_achievements', JSON.stringify([...unlockedAchievements]));
 
+            if (window.GameAudio) {
+                window.GameAudio.playAchievement();
+            }
+
             achievementNotificationQueue.push(achievement);
             if (!currentNotification) {
                 showNextNotification();
@@ -822,6 +826,9 @@
             document.getElementById('game-info').classList.remove('hidden');
             document.getElementById('canvas-container').classList.remove('hidden');
             document.getElementById('controls').classList.remove('hidden');
+
+            // Unlock achievement for visiting this canvas
+            unlockAchievement('visit_456');
 
             // Process differences into individual regions first
             const allRegions = groupPixelsIntoRegions(differencesData.differences);
@@ -1097,5 +1104,6 @@
             updateScore();
         }
     </script>
+    <script src="assets/audio.js"></script>
 </body>
 </html>

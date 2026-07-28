@@ -140,9 +140,15 @@
             const url = urls[option];
             if (option === 'mint') {
                 window.open(url, '_blank', 'noopener');
-            } else {
-                window.location.href = url;
+                return;
             }
+            if (window.GameAudio) {
+                window.GameAudio.playEnterCanvas();
+            }
+            // Small delay so the SFX is audible before the page navigates away
+            setTimeout(() => {
+                window.location.href = url;
+            }, 200);
         }
 
         // Keyboard controls
@@ -188,5 +194,6 @@
         // Initialize
         updateImage();
     </script>
+    <script src="assets/audio.js"></script>
 </body>
 </html>

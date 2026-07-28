@@ -1114,7 +1114,11 @@
             localStorage.setItem('basepaint_achievements', JSON.stringify([...unlockedAchievements]));
             
             console.log(`🏆 Achievement unlocked: ${achievement.name}`);
-            
+
+            if (window.GameAudio) {
+                window.GameAudio.playAchievement();
+            }
+
             // Add to notification queue
             achievementNotificationQueue.push(achievement);
             
@@ -1262,9 +1266,27 @@
             handleInput();
             updateAnimations();  // Update door animations
             checkEdgeStatus();
+            checkHiddenSpots();
             render();
             updateUI();
             requestAnimationFrame(gameLoop);
+        }
+
+        // Secret achievements: stand within radius of a specific hidden coordinate
+        const HIDDEN_SPOTS = [
+            { x: 21, y: 80, radius: 3, achievementId: 'hidden_spot_mri' },
+            { x: 138, y: 147, radius: 3, achievementId: 'hidden_spot_water_cooler' }
+        ];
+        function checkHiddenSpots() {
+            const feetX = player.x + player.width / 2;
+            const feetY = player.y;
+            for (const spot of HIDDEN_SPOTS) {
+                const dx = feetX - spot.x;
+                const dy = feetY - spot.y;
+                if (Math.sqrt(dx * dx + dy * dy) <= spot.radius) {
+                    unlockAchievement(spot.achievementId);
+                }
+            }
         }
 
         function handleInput() {
@@ -1672,6 +1694,7 @@
             debugMode = false;
         }
     </script>
+    <script src="assets/audio.js"></script>
     
     <!-- Achievement System UI -->
     <button class="achievement-button" onclick="openAchievementModal()">🏆 Achievements</button>

@@ -438,7 +438,11 @@
             unlockedAchievements.add(achievementId);
             localStorage.setItem('basepaint_achievements', JSON.stringify([...unlockedAchievements]));
             console.log(`🏆 Achievement unlocked: ${achievement.name}`);
-            
+
+            if (window.GameAudio) {
+                window.GameAudio.playAchievement();
+            }
+
             achievementNotificationQueue.push(achievement);
             if (!currentNotification) {
                 showNextNotification();
@@ -611,5 +615,6 @@
             window.location.href = 'canvas-navigator.html';
         }
     </script>
+    <script src="assets/audio.js"></script>
 </body>
 </html>

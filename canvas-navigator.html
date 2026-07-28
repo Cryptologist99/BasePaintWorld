@@ -1119,7 +1119,11 @@
             localStorage.setItem('basepaint_achievements', JSON.stringify([...unlockedAchievements]));
             
             console.log(`🏆 Achievement unlocked: ${achievement.name}`);
-            
+
+            if (window.GameAudio) {
+                window.GameAudio.playAchievement();
+            }
+
             // Add to notification queue
             achievementNotificationQueue.push(achievement);
             
@@ -1705,6 +1709,7 @@
             debugMode = false;
         }
     </script>
+    <script src="assets/audio.js"></script>
     
     <!-- Achievement System UI -->
     <button class="achievement-button" onclick="openAchievementModal()">🏆 Achievements</button>
